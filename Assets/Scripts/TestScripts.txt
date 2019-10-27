@@ -1,0 +1,559 @@
+using UnityEngine;
+using System.Collections;
+using System;
+using UnityEngine.SceneManagement;
+
+public class fcGameManager : fcSingleton< fcGameManager > {
+
+   public enum Alarm
+   {
+      Alarm_StarGate,
+      Alarm_WorldBoss,
+      Alarm_Stamina_Normal,
+      Alarm_Stamina_Outpost,
+      Alarm_Stamina_Arena,
+        Alarm_FreeRewardBox,
+        Alarm_OuterPlanetReward,
+        Alarm_JewelAdventureReward,
+
+      Count,
+   }
+
+   public enum LoginStep
+   {
+      Wait,
+      //WebAuth,
+      WaitWebAuth,
+      WebServerList,
+      WaitWebServerList,
+      ConnectLoadBalancer,
+      WaitConnectLoadBalancer,
+      Login,
+      WaitLogin,
+      CheckPlayer,
+      WaitCheckPlayer,
+      GetGameplay,
+        WaitGetGameplay,
+      ConnectGameServer,
+      WaitConnectGameServer,
+      CheckLogin,
+      WaitCheckLogin,
+      ChangeScene,
+      Done,
+   }
+
+   private static LoginStep   _loginStep = LoginStep.Wait;
+   public static LoginStep loginStep { get { return _loginStep; } set { _loginStep = value; _loginDelay = 0.1f; } }
+   private static float       _loginDelay = 0.0f;
+
+    fcE_GAME_SCENE_TYPE _prevGameScene = fcE_GAME_SCENE_TYPE.StartScene;
+    fcE_GAME_SCENE_TYPE _currentGameScene = fcE_GAME_SCENE_TYPE.StartScene;
+
+    public fcE_GAME_SCENE_TYPE p_ePrevGameSceneType { get { return _prevGameScene; } set { _prevGameScene = value; } }
+    public fcE_GAME_SCENE_TYPE p_eCurrentGameSceneType { get { return _currentGameScene; } }
+   
+   bool               _isChangeScene = false;
+   fcE_GAME_SCENE_TYPE    _changeSceneType = fcE_GAME_SCENE_TYPE.LoginScene;
+
+    bool                    _isPostChangeSCene = false;
+
+   public bool            _init_plugin = false;
+   
+   public void Update ()
+   {
+      if ( 0.0f < _loginDelay )
+         _loginDelay -= Time.fixedDeltaTime;
+
+      switch ( _loginStep )
+      {
+         case LoginStep.Wait:
+            {
+            }
+            break;
+
+         //case LoginStep.WebAuth:
+         //   {
+         //      if ( 0.0f < _loginDelay )
+         //         break;
+
+         //      _loginStep = LoginStep.WaitWebAuth;
+
+         //      fcNetManager.Instance._webHandler_Auth.WebPacket_FinconWebAuth ( fcPlayerInfo.Instance.p_base_info.testId );
+         //      _ShowMessageBox ( fcGameText.Instance.GetText ( "SYSTEM_LoginStep_WebAuth" ), fcE_MESSAGEBOX_TYPE.WAIT );
+         //   }
+         //   break;
+         case LoginStep.WebServerList:
+            {
+               if (0.0f < _loginDelay)
+                  break;
+
+               fcUIManager.Instance.CloseSystemMessageBox();
+               fcUI_WaitingMessageManager.instance.Close();
+               fcNetManager.Instance._webHandler_Auth.WebPacket_WorldList();
+               _loginStep = LoginStep.WaitWebServerList;
+            }
+            break;
+
+         case LoginStep.ConnectLoadBalancer:
+            {
+               if ( 0.0f < _loginDelay )
+                  break;
+
+               _loginStep = LoginStep.WaitConnectLoadBalancer;
+
+               fcGameServerInfo game_server_info = fcPlayerInfo.Instance.p_game_server_info;
+
+               fcNetManager.Instance._webHandler_Auth.WebPacket_MaintenanceWorld(game_server_info.p_load_balancer_check_world_no, (WebApiPacket_WorldList.WorldInfo world_info) =>
+               {
+                  switch (world_info._status)
+                  {
+                     case WebApiPacket_WorldList.Status.Hidden:
+                     case WebApiPacket_WorldList.Status.Maintenance:
+                        {
+                           ShowMaintenanceMessage();
+                        }
+                        return;
+                  }
+
+                  fcUI_WaitingMessageManager.instance.Show(600.0f);
+                  fcNetManager.Instance.Connect(game_server_info.p_load_balancer_address, game_server_info.p_load_balancer_port, false);
+               });
+
+               //_ShowMessageBox ( fcGameText.Instance.GetText ( "SYSTEM_LoginStep_ConnectLoadBalancer" ), fcE_MESSAGEBOX_TYPE.WAIT );
+            }
+            break;
+
+         case LoginStep.Login:
+            {
+               if ( 0.0f < _loginDelay )
+                  break;
+
+               _loginStep = LoginStep.WaitLogin;
+
+               fcUI_WaitingMessageManager.instance.Show(600.0f);
+
+               fcNetManager.Instance.m_packetHandler_Auth.Packet_LoginReq ();
+               //_ShowMessageBox ( fcGameText.Instance.GetText ( "SYSTEM_LoginStep_Login" ), fcE_MESSAGEBOX_TYPE.WAIT );
+            }
+            break;
+         case LoginStep.CheckPlayer:
+            {
+               if (0.0f < _loginDelay)
+                  break;
+
+               _loginStep = LoginStep.WaitCheckPlayer;
+
+               UInt64 player_no = fcUserConfig.Instance.GetLastPlayer(fcPlayerInfo.Instance.p_account_no, fcPlayerInfo.Instance.p_game_server_info.p_last_world_no);
+               if (player_no != 0)
+               {
+                  LoginPlayerInfo find_player_info = fcPlayerInfo.Instance.p_game_server_info._lstLoginPlayerInfo.Find(item => item._player_no == player_no);
+                  if (find_player_info == null)
+                     player_no = 0;
+               }
+
+               int check_count = fcPlayerInfo.Instance.p_game_server_info._lstLoginPlayerInfo.Count;
+               switch (check_count)
+               {
+                  case 0:
+                     {
+                        fcPlayerInfo.Instance.p_game_server_info._select_player_no = 0;
+                        _loginStep = LoginStep.GetGameplay;
+                     }
+                     break;
+                  case 1:
+                     {
+                        if (player_no == 0)
+                        {
+                           player_no = fcPlayerInfo.Instance.p_game_server_info._lstLoginPlayerInfo[0]._player_no;
+                        }
+
+                        fcPlayerInfo.Instance.p_game_server_info._select_player_no = player_no;
+                        _loginStep = LoginStep.GetGameplay;
+                     }
+                     break;
+                  default:
+                     {
+                        fcPlayerInfo.Instance.p_game_server_info._select_player_no = player_no;
+
+                        if (fcGameManager.Instance.p_eCurrentGameSceneType == fcE_GAME_SCENE_TYPE.LoginScene)
+                        {
+                           fcUI_WaitingMessageManager.instance.Close();
+                           fcUIManager.Instance.OpenUI(fcE_UI_Type.Panel_Login_Server, fcUI_Server.fcE_State_Type.SelectPlayer);
+                        }
+                        else
+                        {
+                           _loginStep = LoginStep.GetGameplay;
+                        }
+                     }
+                     break;
+               }
+            }
+            break;
+         case LoginStep.GetGameplay:
+            {
+               if (0.0f < _loginDelay)
+                  break;
+
+               _loginStep = LoginStep.WaitGetGameplay;
+
+               fcUI_WaitingMessageManager.instance.Show(600.0f);
+
+               fcNetManager.Instance.m_packetHandler_Auth.Packet_GetGameplayReq();
+               //_ShowMessageBox ( fcGameText.Instance.GetText ( "SYSTEM_LoginStep_GetGameplay:" ), fcE_MESSAGEBOX_TYPE.WAIT );
+            }
+            break;
+
+         case LoginStep.ConnectGameServer:
+            {
+               if ( 0.0f < _loginDelay )
+                  break;
+
+               _loginStep = LoginStep.WaitConnectGameServer;
+
+               fcUI_WaitingMessageManager.instance.Show(600.0f);
+
+               fcGameServerInfo game_server_info = fcPlayerInfo.Instance.p_game_server_info;
+               fcNetManager.Instance.Connect (game_server_info.gameServerIp, game_server_info.gameServerPort, true );
+               
+               //_ShowMessageBox ( fcGameText.Instance.GetText ( "SYSTEM_LoginStep_ConnectGameServer" ), fcE_MESSAGEBOX_TYPE.WAIT );
+            }
+            break;
+
+         case LoginStep.CheckLogin:
+            {
+               if ( 0.0f < _loginDelay )
+                  break;
+
+               _loginStep = LoginStep.WaitCheckLogin;
+
+               fcUI_WaitingMessageManager.instance.Show(600.0f);
+
+               fcNetManager.Instance.m_packetHandler_Auth.Packet_CheckLoginReq ();
+               //_ShowMessageBox ( fcGameText.Instance.GetText ( "SYSTEM_LoginStep_CheckLogin" ), fcE_MESSAGEBOX_TYPE.WAIT );
+            }
+            break;
+
+         case LoginStep.ChangeScene:
+            {
+               if ( 0.0f < _loginDelay )
+                  break;
+
+               _loginStep = LoginStep.Done;
+
+               if ( _currentGameScene != fcE_GAME_SCENE_TYPE.MainScene )
+                  ChangeScene ( fcE_GAME_SCENE_TYPE.MainScene );
+            }
+            break;
+      }
+
+      _CheckChangeScene ();
+        _PostChangeScene();
+   }
+
+   void _ShowMessageBox ( string message, fcE_MESSAGEBOX_TYPE messageType = fcE_MESSAGEBOX_TYPE.OK )
+   {
+      //fcUIManager.Instance._SystemMessageManager.CloseMessageBox();
+      fcUIManager.Instance.ShowSystemMessageBox(message, messageType);
+   }
+
+   void _CheckChangeScene ()
+   {
+      if ( !_isChangeScene )
+         return;
+            
+      _prevGameScene = _currentGameScene;
+        _currentGameScene = _changeSceneType;
+
+        if(fcUIManager.Instance != null)
+          fcUIManager.Instance.EndSceneUI();
+
+      fcResourceManager.ClearPreload(fcE_Preload_Type.None);
+      fcResourceManager.ClearPreload(fcE_Preload_Type.Battle1);
+      fcResourceManager.ClearPreload(fcE_Preload_Type.Battle2);
+      fcResourceManager.ClearPreload(fcE_Preload_Type.Battle3);
+      fcResourceManager.ClearPreload(fcE_Preload_Type.Sector);
+      fcResourceManager.ClearAsyncList();
+      fcFrameDataManager.Instance.Clear();
+
+      //if ( _changeSceneType == fcE_GAME_SCENE_TYPE.LoginScene )
+      //{
+      //   SceneManager.LoadScene( (int)_changeSceneType, LoadSceneMode.Single );
+      //   System.GC.Collect();
+      //}
+      //else
+      {
+         fcUI_LoadingSceneManager.instance.ChangeScene(_changeSceneType);
+      }
+      
+      _isChangeScene = false;
+
+        // complet scene change
+        _isPostChangeSCene = true;
+   }
+   
+   public void ChangeScene( fcE_GAME_SCENE_TYPE changeSceneType )
+    {
+      Time.timeScale = 1.0f;
+
+      if (changeSceneType == fcE_GAME_SCENE_TYPE.BattleScene)
+      {
+         fcGameMessageManager.Instance.p_is_battle_loading = true;
+      }
+
+      _changeSceneType = changeSceneType;
+      _isChangeScene = true;
+
+
+        fcSoundManager.Instance.RetrunSoundObject();
+
+      fcUIManager.Instance.CloseWindow(fcE_UI_Type.Popup_Common_Chatting);
+
+      switch ( _currentGameScene )
+      {
+      case fcE_GAME_SCENE_TYPE.BattleScene:
+         ClearBattleData();
+         break;
+         
+      default :
+         _CheckChangeScene();
+         break;
+      }      
+   }
+
+    // complete scene load 
+    public void _PostChangeScene ()
+    {
+        if( false == _isPostChangeSCene )
+            return;
+
+        if( ( ( int )_currentGameScene == SceneManager.GetActiveScene().buildIndex ) ||
+            ( _currentGameScene == fcE_GAME_SCENE_TYPE.BattleScene && ( int )_currentGameScene <= SceneManager.GetActiveScene().buildIndex ) )
+        {
+            //Do do 
+            //{
+
+            fcSoundManager.Instance.ChangeScene( _currentGameScene );
+
+            //}
+
+            _isPostChangeSCene = false;
+        }        
+    }
+
+    public void GameEnd()
+    {
+      fcGameConfig.Save();
+
+        if(_currentGameScene == fcE_GAME_SCENE_TYPE.BattleScene)
+            fcGetPhoneStatus.SetBrightness(fcGetPhoneStatus.brightness);
+    }
+
+    public void Quit()
+    {
+        GameEnd();
+        Application.Quit();
+    }
+   
+   public void LogoutPlatform()
+   {
+   #if _USE_PLATFORM_LOGIN_
+   #if UNITY_ANDROID
+      fcUserConfig.Instance.p_last_login_id = string.Empty;
+      fcGooglePlayGames.DoSignOut();
+   #elif UNITY_IOS
+      fcGameCenter.Logout();
+   #endif
+      fcFacebook.p_facebook.Logout();
+   #endif
+
+#if _USE_KAKAO_LOGIN_
+      if (fcKakao.p_instance != null)
+         fcKakao.p_instance.Logout_Kakao(null);
+#if UNITY_IOS
+      else
+         fcGameCenter.Logout();
+#endif
+#endif
+
+#if _USE_LINE_LOGIN_
+      if (fcLineLogin.p_instance != null)
+         fcLineLogin.p_instance.Logout(null, null);
+#endif
+
+#if _USE_TWITTER_LOGIN_
+      if (fcTwitter.p_instance != null)
+         fcTwitter.p_instance.Logout();
+#endif
+   }
+
+    public void LogOut (bool logout_platform = false)
+    {    
+      Debug.Log ("----------------Logout HelloHero");
+      GameEnd();
+
+      if (logout_platform)
+      {
+         LogoutPlatform();
+
+         fcPlayerInfo.Instance.p_login_type = eLOGIN_TYPE.NONE;
+         fcPlayerInfo.Instance.p_access_key = string.Empty;
+         fcPlayerInfo.Instance.p_account_no = 0;
+
+         fcGameConfig.Set("Clause", false);
+         fcGameConfig.Set("NightPush", false);
+      }
+
+      fcNetManager.Instance.NetClose();
+        fcGlobalObject.p_GlobalObject.StopAllCoroutines();
+
+        if ( fcGameManager.Instance.p_eCurrentGameSceneType != fcE_GAME_SCENE_TYPE.LoginScene )
+         fcGameManager.Instance.ChangeScene ( fcE_GAME_SCENE_TYPE.LoginScene );
+    }
+
+   public bool StartStage (fcE_GAME_SCENE_TYPE sceneType = fcE_GAME_SCENE_TYPE.BattleScene)
+   {
+      fcStageManager.Instance.CreateStageObjects ();
+
+      _currentGameScene = sceneType;
+
+      return true;
+   }
+
+#if UNITY_EDITOR
+   public void SetBattleGameSceneType()
+   {
+      _currentGameScene = fcE_GAME_SCENE_TYPE.BattleScene;
+   }
+#endif
+
+   public void CollectPreloadAsset ()
+   {
+      fcStageManager.Instance.CollectPreloadAsset ();
+      fcSkillGuideLine.Instance.CollectPreloadAsset ();
+      fcBattleManager.Instance.CollectPreloadAsset ();
+      fcSoundManager.Instance.CollectPreloadAsset ();
+      fcEffectManager.Instance.CollectPreloadAsset_Battle ();
+   }
+   
+   public void ClearBattleData ()
+   {
+      fcStageManager.Instance.Destroy();
+      fcBattleManager.Instance.Clear();
+      fcCutsceneManager.Instance.Clear ();
+      fcUIManager.Instance.CloseNickNameWindow();
+
+        fcSoundManager.Instance.RetrunSoundObject();
+
+      fcUserConfig.Instance.SaveUserCamZoom();
+   }
+
+    public void ClearStoryData()
+    {
+        fcBattleManager.Instance.Clear();
+        fcCutsceneManager.Instance.Clear();
+        fcSoundManager.Instance.RetrunSoundObject();
+    }
+
+   public void SetAlarm()
+   {
+      fcMessageAlarm.ClearAlarm();
+#if _USE_DEBUG_LOG_
+      _SetAlarm(10, "디버그에서만 동작하는 알림 테스트");
+#endif
+
+      fcUserConfig.Instance.LoadAlarmCheck();
+      _SetAlarm(Alarm.Alarm_StarGate, "GT_Alarm_StarGate_Start");
+      _SetAlarm(Alarm.Alarm_WorldBoss, "GT_Alarm_WorldBoss_Start");
+      _SetAlarm(Alarm.Alarm_Stamina_Normal, "GT_Alarm_Stamina_Normal");
+      _SetAlarm(Alarm.Alarm_Stamina_Outpost, "GT_Alarm_Stamina_Outpost");
+      _SetAlarm(Alarm.Alarm_Stamina_Arena, "GT_Alarm_Stamina_Arena");
+        _SetAlarm(Alarm.Alarm_OuterPlanetReward, "GT_Alarm_OuterPlanetReward");
+        _SetAlarm(Alarm.Alarm_FreeRewardBox, "GT_Alarm_FreeRewardBox");
+        _SetAlarm(Alarm.Alarm_JewelAdventureReward, "GT_Alarm_JewelAdventureReward");
+    }
+
+   void _SetAlarm(Alarm alarm_type, string game_text_key)
+   {
+      if (alarm_type == Alarm.Count)
+         return;
+
+      if (fcUserConfig.Instance._optionInfo._alarm_check[(int)alarm_type] == false)
+         return;
+
+      long time = 0;
+      if (fcGameConfig.Get(alarm_type.ToString(), ref time))
+      {
+         DateTime alarm_time = DateTime.FromBinary(time);
+
+         bool is_push = true;
+         if (fcPlayerInfo.Instance.Is_Korea_ForKakao)
+         {
+            bool is_night_push = false;
+                // 이전값 체크
+            fcGameConfig.Get("NightPush", ref is_night_push);
+                if(is_night_push)
+                    fcGameConfig.Set("NightPush_KR",true);
+                else
+                    fcGameConfig.Get("NightPush_KR", ref is_night_push);
+
+                if (is_night_push == false
+               && (alarm_time.Hour >= 21 || alarm_time.Hour < 8))
+            {
+               is_push = false;
+            }
+         }
+            else if(fcPlayerInfo.Instance.is_Japanese)
+            {
+                bool is_night_push = false;
+                fcGameConfig.Get("NightPush_JP", ref is_night_push);
+
+                if (is_night_push == false
+                    && (alarm_time.Hour >= 21 || alarm_time.Hour < 8))
+                {
+                    is_push = false;
+                }
+            }
+
+         if (is_push)
+         {
+            TimeSpan ts = alarm_time - DateTime.Now;
+            if (ts.TotalSeconds > 0)
+            {
+               _SetAlarm((int)ts.TotalSeconds, fcGameText.Instance.GetText(game_text_key));
+            }
+         }
+      }
+   }
+
+   void _SetAlarm(int time, string contents)
+   {
+      fcMessageAlarm.SetAlarm(time, contents, fcGameText.Instance.GetText("GT_GameName"), fcGameText.Instance.GetText("GT_GameName"));
+   }
+
+
+   public void ResetGame()
+   {
+      fcNetManager.Instance.NetClose();
+      ClearBattleData();
+      ClearStoryData();
+      GameEnd();
+      fcPlayerInfo.Instance.Clear();
+      fcDownloadManager.Instance.Clear();
+      fcResourceManager.Clear();
+   }
+
+   public void ShowMaintenanceMessage()
+   {
+      fcE_MESSAGEBOX_TYPE message_box_type = fcE_MESSAGEBOX_TYPE.OK;
+#if UNITY_EDITOR || UNITY_WEBPLAYER
+      message_box_type = fcE_MESSAGEBOX_TYPE.NONE;
+#endif
+      fcUIManager.Instance.ShowSystemMessageBox(fcGameText.Instance.GetText("SYSTEM_InGame_Maintenance"), message_box_type, (fcE_MESSAGEBOX_CONFIRM_TYPE type) =>
+      {
+         if (type == fcE_MESSAGEBOX_CONFIRM_TYPE.OK)
+         {
+            Application.Quit();
+         }
+      });
+   }
+}
