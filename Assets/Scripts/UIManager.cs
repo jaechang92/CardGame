@@ -24,4 +24,10 @@ public class UIManager : MonoBehaviour {
         UI[1].SetActive(true);
     }
 
+    public void SelectCardSlotBtn()
+    {
+
+    }
+
+
 }

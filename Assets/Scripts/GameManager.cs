@@ -34,8 +34,9 @@ public class GameManager : MonoBehaviour {
 
 
     void Start () {
-		
-	}
+        CardCreate("Player", 10);
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -50,8 +51,10 @@ public class GameManager : MonoBehaviour {
         {
             if (PlayerCardPool.Count < count)
             {
-                for (int i = 0; i < count - PlayerCardPool.Count; i++)
+                int num = count - PlayerCardPool.Count;
+                for (int i = 0; i < num; i++)
                 {
+                    
                     GameObject obj = Instantiate(nullPrefab, playerParentPool.transform);
                     PlayerCardPool.Add(obj);
                 }
@@ -62,7 +65,8 @@ public class GameManager : MonoBehaviour {
         {
             if (EnemyCardPool.Count < count)
             {
-                for (int i = 0; i < count - EnemyCardPool.Count; i++)
+                int num = count - EnemyCardPool.Count;
+                for (int i = 0; i < num; i++)
                 {
                     GameObject obj = Instantiate(nullPrefab, enemyParentPool.transform);
                     EnemyCardPool.Add(obj);
