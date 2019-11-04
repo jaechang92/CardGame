@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour {
 
@@ -29,5 +30,24 @@ public class UIManager : MonoBehaviour {
 
     }
 
+
+    public void CardSelectArrowButton(string A)
+    {
+        switch (A)
+        {
+            case "Right":
+                //Debug.Log(EventSystem.current.currentSelectedGameObject.transform.parent.name);
+                EventSystem.current.currentSelectedGameObject.transform.parent.GetComponent<Animator>().SetTrigger("Close");
+                break;
+
+            case "Left":
+                EventSystem.current.currentSelectedGameObject.transform.parent.GetComponent<Animator>().SetTrigger("Open");
+                break;
+
+            default:
+                break;
+        }
+    }
+    
 
 }
