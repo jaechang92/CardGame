@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UIManager : MonoBehaviour {
+
+public class UIManager : MonoBehaviour{
 
     public List<GameObject> UI;
     public List<GameObject> Page;
@@ -12,12 +13,17 @@ public class UIManager : MonoBehaviour {
 
     public GameObject cardDrag;
     public bool dragging = false;
-    private int temp = 0;
+    public ScrollRect scrollRect;
 
+    private int temp = 0;
+    private CardNameAndOption _cardNameAndOption;
+    
+    
     void Init()
     {
         UI[1].SetActive(false);
         cardDrag.SetActive(false);
+        _cardNameAndOption = cardDrag.GetComponent<CardNameAndOption>();
     }
 
     // Use this for initialization
@@ -37,6 +43,10 @@ public class UIManager : MonoBehaviour {
         {
             cardDrag.SetActive(false);
         }
+
+
+
+
 	}
 
 
@@ -74,23 +84,26 @@ public class UIManager : MonoBehaviour {
         }
     }
     
-    public void CardDarg(int i)
-    {
-        Debug.Log("카드"+i);
-    }
 
 
-
-
-    public void StartDrag()
+    public void StartDrag(int i)
     {
         dragging = true;
+        _cardNameAndOption.GetProperty(CardDatabase.instance.cardList[i].cardIcon);
+        
     }
 
     public void EndDrag()
     {
         dragging = false;
+        scrollRect.vertical = true;
     }
 
+    
+
+    public void TestBtn()
+    {
+        Debug.Log("Click");
+    }
 
 }

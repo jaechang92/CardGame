@@ -16,8 +16,9 @@ public class Card
     public int mana;
     public int damage;
     public int hp;
+    public bool isMagicCard;
 
-    public Card(int _cardID, string _cardName, string _cardDescription, Sprite _cardIcon,int _mana,int _damage,int _hp)
+    public Card(int _cardID, string _cardName, string _cardDescription, Sprite _cardIcon,int _mana,int _damage,int _hp,bool _isMagicCard)
     {
         cardID = _cardID;
         cardName = _cardName;
@@ -26,6 +27,7 @@ public class Card
         mana = _mana;
         damage = _damage;
         hp = _hp;
+        isMagicCard = _isMagicCard;
     }
 
 }

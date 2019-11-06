@@ -4,8 +4,21 @@ using UnityEngine;
 
 public class CardDatabase : MonoBehaviour {
 
-
+    static public CardDatabase instance;
     public List<Card> cardList = new List<Card>();
+
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(this.gameObject);
+            instance = this;
+        }
+    }
 
     void Start () {
 		

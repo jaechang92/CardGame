@@ -58,6 +58,7 @@
      <Compile Include="Assets\Scripts\CardNameAndOption.cs" />
      <Compile Include="Assets\Scripts\CardState.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\PressEvent.cs" />
      <Compile Include="Assets\Scripts\SoundManager.cs" />
      <Compile Include="Assets\Scripts\UIManager.cs" />
      <None Include="Assets\Scripts\TestScripts.txt" />
