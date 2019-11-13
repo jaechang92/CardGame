@@ -17,13 +17,14 @@ public class UIManager : MonoBehaviour{
 
     private int temp = 0;
     private CardNameAndOption _cardNameAndOption;
-    
-    
+    private CardDecManager CDM;
+
     void Init()
     {
         UI[1].SetActive(false);
         cardDrag.SetActive(false);
         _cardNameAndOption = cardDrag.GetComponent<CardNameAndOption>();
+        CDM = GameManager.instance.managerPool[4].GetComponent<CardDecManager>();
     }
 
     // Use this for initialization
@@ -41,6 +42,12 @@ public class UIManager : MonoBehaviour{
         }
         else
         {
+            if (_cardNameAndOption.switching && CDM.pivot < 30)
+            {
+                CDM.GetImage(_cardNameAndOption.sprite.sprite);
+                Debug.Log("드롭");
+                _cardNameAndOption.switching = false;
+            }
             cardDrag.SetActive(false);
         }
 

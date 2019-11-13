@@ -12,7 +12,8 @@ public class CardNameAndOption : MonoBehaviour {
     public Vector2 sizeHorizontal;
     // Use this for initialization
 
-    private bool switching = false;
+    
+    public bool switching = false;
     void init()
     {
         tr = GetComponent<RectTransform>();
@@ -20,6 +21,7 @@ public class CardNameAndOption : MonoBehaviour {
         sizeHorizontal = new Vector2(150, 20);
         sprite = this.gameObject.GetComponent<Image>();
         tr.sizeDelta = sizeVertical;
+        
     }
 
 	void Start () {
@@ -33,13 +35,16 @@ public class CardNameAndOption : MonoBehaviour {
             Debug.Log("실행");
             switching = !switching;
             tr.sizeDelta = sizeHorizontal;
+            Debug.Log(switching);
         }
         else if(tr.anchoredPosition.x < 255 && switching)
         {
             Debug.Log("실행2");
             switching = !switching;
-            tr.sizeDelta = sizeVertical;
+            tr.sizeDelta = sizeVertical; 
         }
+
+        
 	}
 
     public void GetProperty(Sprite _sprite)

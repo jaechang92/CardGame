@@ -258,6 +258,7 @@ MonoBehaviour:
   - {fileID: 643400527}
   - {fileID: 1568700794}
   - {fileID: 1175992050}
+  - {fileID: 1293843907}
   nullPrefab: {fileID: 1993324048}
   playerParentPool: {fileID: 1518326662}
   enemyParentPool: {fileID: 0}
@@ -713,7 +714,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 347, y: 232.4}
+  m_AnchoredPosition: {x: 75, y: 419}
   m_SizeDelta: {x: 150, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &358219752
@@ -731,6 +732,7 @@ MonoBehaviour:
   sprite: {fileID: 0}
   sizeVertical: {x: 0, y: 0}
   sizeHorizontal: {x: 0, y: 0}
+  switching: 0
 --- !u!1 &365986131
 GameObject:
   m_ObjectHideFlags: 0
@@ -3496,6 +3498,7 @@ GameObject:
   - component: {fileID: 1293843908}
   - component: {fileID: 1293843911}
   - component: {fileID: 1293843909}
+  - component: {fileID: 1293843910}
   m_Layer: 5
   m_Name: Dec
   m_TagString: Untagged
@@ -3564,6 +3567,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &1293843910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1293843907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee63f28f362527f448c9ce2db01dc8b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxCount: 30
+  CardDec:
+  - {fileID: 1072285806}
+  - {fileID: 562630129}
+  - {fileID: 1459750670}
+  - {fileID: 587310607}
+  - {fileID: 514531309}
+  - {fileID: 1159097698}
+  - {fileID: 1713523379}
+  - {fileID: 1115684122}
+  - {fileID: 1128469681}
+  - {fileID: 280392745}
+  - {fileID: 1112331952}
+  - {fileID: 1285137567}
+  - {fileID: 1459651802}
+  - {fileID: 582877890}
+  - {fileID: 1885323420}
+  - {fileID: 763809949}
+  - {fileID: 1787029782}
+  - {fileID: 659468202}
+  - {fileID: 285835696}
+  - {fileID: 1530109485}
+  - {fileID: 1313892871}
+  - {fileID: 1637547382}
+  - {fileID: 1242569759}
+  - {fileID: 2079183723}
+  - {fileID: 722505388}
+  - {fileID: 1575934434}
+  - {fileID: 1357652997}
+  - {fileID: 1795650896}
+  - {fileID: 435027127}
+  - {fileID: 1456171138}
+  pivot: 0
 --- !u!114 &1293843911
 MonoBehaviour:
   m_ObjectHideFlags: 0
