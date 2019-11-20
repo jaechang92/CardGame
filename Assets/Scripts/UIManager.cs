@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour{
 
+    static public UIManager instance;
     public List<GameObject> UI;
     public List<GameObject> Page;
 
@@ -18,13 +19,26 @@ public class UIManager : MonoBehaviour{
     private int temp = 0;
     private CardNameAndOption _cardNameAndOption;
     private CardDecManager CDM;
-
+    private int CardInDex;
     void Init()
     {
         UI[1].SetActive(false);
         cardDrag.SetActive(false);
         _cardNameAndOption = cardDrag.GetComponent<CardNameAndOption>();
         CDM = GameManager.instance.managerPool[4].GetComponent<CardDecManager>();
+    }
+
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(this.gameObject);
+            instance = this;
+        }
     }
 
     // Use this for initialization
@@ -42,11 +56,13 @@ public class UIManager : MonoBehaviour{
         }
         else
         {
-            if (_cardNameAndOption.switching && CDM.pivot < 30)
+            if (_cardNameAndOption.OnDec)
             {
-                CDM.GetImage(_cardNameAndOption.sprite.sprite);
+                GameObject obj = ObjectPool.instance.PoolObj();
+                CDM.GetState(obj,_cardNameAndOption.sprite.sprite, CardInDex);
                 Debug.Log("드롭");
-                _cardNameAndOption.switching = false;
+                _cardNameAndOption.OnDec = false;
+
             }
             cardDrag.SetActive(false);
         }
@@ -96,8 +112,8 @@ public class UIManager : MonoBehaviour{
     public void StartDrag(int i)
     {
         dragging = true;
-        _cardNameAndOption.GetProperty(CardDatabase.instance.cardList[i].cardIcon);
-        
+        _cardNameAndOption.GetProperty(CardDatabase.instance.cardList[i].cardIcon, CardDatabase.instance.cardList[i].cardSlotIcon);
+        CardInDex = i;
     }
 
     public void EndDrag()
@@ -106,7 +122,13 @@ public class UIManager : MonoBehaviour{
         scrollRect.vertical = true;
     }
 
-    
+    public void StartDragDec(Sprite s1, Sprite s2)
+    {
+        dragging = true;
+        _cardNameAndOption.GetProperty(s1, s2);
+        Debug.Log("StartDragDec");
+        
+    }
 
     public void TestBtn()
     {

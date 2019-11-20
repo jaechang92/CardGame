@@ -10,7 +10,7 @@ public class Card
     public string cardDescription; // 몬스터의 설명
 
     public Sprite cardIcon; // 몬스터의 기본 아이콘.
-
+    public Sprite cardSlotIcon;// 슬롯 아이콘
     //카드는 마나 공격력 생명력 마법효과가 있다.
 
     public int mana;

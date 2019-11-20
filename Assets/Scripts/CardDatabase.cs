@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardDatabase : MonoBehaviour {
+
+    public Sprite backIcon;
 
     static public CardDatabase instance;
     public List<Card> cardList = new List<Card>();

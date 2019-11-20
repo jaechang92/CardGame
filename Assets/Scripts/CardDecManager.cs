@@ -5,22 +5,32 @@ using UnityEngine.UI;
 
 public class CardDecManager : MonoBehaviour {
 
+    static public CardDecManager instance;
+
     public int maxCount;
 
     public List<GameObject> CardDec;
 
 
-    private List<Image> LCD;
+    
     public int pivot = 0;
-	void Start () {
-        
-        foreach (var item in CardDec)
+
+
+    void Awake()
+    {
+        if (instance != null)
         {
-            if( item.GetComponent<Image>().sprite == null)
-            {
-                item.SetActive(false);
-            }
+            Destroy(this.gameObject);
         }
+        else
+        {
+            DontDestroyOnLoad(this.gameObject);
+            instance = this;
+        }
+    }
+
+    void Start () {
+
 	}
 	
 	
@@ -29,11 +39,14 @@ public class CardDecManager : MonoBehaviour {
 	}
 
 
-    public void GetImage(Sprite _sprite)
+    public void GetState(GameObject obj, Sprite _sprite, int i)
     {
-        CardDec[pivot].SetActive(true);
-        CardDec[pivot].GetComponent<Image>().sprite = _sprite;
-        pivot++;
+        obj.GetComponent<Image>().sprite = _sprite;
+        obj.GetComponent<CardState>().CardSetup(i);
+        obj.transform.parent = this.gameObject.transform;
+
     }
+
+
 
 }
