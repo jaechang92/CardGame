@@ -59,7 +59,14 @@ public class UIManager : MonoBehaviour{
             if (_cardNameAndOption.OnDec)
             {
                 GameObject obj = ObjectPool.instance.PoolObj();
-                CDM.GetState(obj,_cardNameAndOption.sprite.sprite, CardInDex);
+                if (obj != null)
+                {
+                    CDM.GetState(obj,_cardNameAndOption.sprite.sprite, CardInDex);
+                }
+                else
+                {
+                    Debug.Log("더이상 추가할수 없습니다.");
+                }
                 Debug.Log("드롭");
                 _cardNameAndOption.OnDec = false;
 
@@ -120,6 +127,7 @@ public class UIManager : MonoBehaviour{
     {
         dragging = false;
         scrollRect.vertical = true;
+        Debug.Log("EndDrag");
     }
 
     public void StartDragDec(Sprite s1, Sprite s2)

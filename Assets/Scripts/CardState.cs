@@ -36,12 +36,12 @@ public class CardState : MonoBehaviour {
             if (tr.eulerAngles.y > 90 && tr.eulerAngles.y <= 180)
             {
 
-                image.sprite = sprites[0];
+                image.sprite = sprites[1];
             }
             else
             {
 
-                image.sprite = sprites[1];
+                image.sprite = sprites[0];
             }
         }
         else

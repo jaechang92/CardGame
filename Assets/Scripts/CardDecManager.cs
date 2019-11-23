@@ -10,7 +10,7 @@ public class CardDecManager : MonoBehaviour {
     public int maxCount;
 
     public List<GameObject> CardDec;
-
+    
 
     
     public int pivot = 0;
@@ -24,13 +24,13 @@ public class CardDecManager : MonoBehaviour {
         }
         else
         {
-            DontDestroyOnLoad(this.gameObject);
+            DontDestroyOnLoad(this.transform.root.gameObject);
             instance = this;
         }
     }
 
     void Start () {
-
+	
 	}
 	
 	
@@ -43,7 +43,7 @@ public class CardDecManager : MonoBehaviour {
     {
         obj.GetComponent<Image>().sprite = _sprite;
         obj.GetComponent<CardState>().CardSetup(i);
-        obj.transform.parent = this.gameObject.transform;
+        obj.transform.SetParent(this.gameObject.transform);
 
     }
 

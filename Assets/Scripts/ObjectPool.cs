@@ -8,6 +8,8 @@ public class ObjectPool : MonoBehaviour {
     public int maxCount;
 
     public List<GameObject> CardDec;
+    public List<GameObject> EmptyDec;
+
     public GameObject nullDec;
 
     void Awake()
@@ -18,7 +20,7 @@ public class ObjectPool : MonoBehaviour {
         }
         else
         {
-            DontDestroyOnLoad(this.gameObject);
+            DontDestroyOnLoad(this.transform.root.gameObject);
             instance = this;
         }
     }
@@ -32,10 +34,11 @@ public class ObjectPool : MonoBehaviour {
 
     public GameObject PoolObj()
     {
-        if (CardDec.Count > 1)
+        if (EmptyDec.Count > 0)
         {
-            GameObject obj = CardDec[CardDec.Count-1];
-            CardDec.Remove(obj);
+            GameObject obj = EmptyDec[EmptyDec.Count-1];
+            EmptyDec.Remove(obj);
+            CardDec.Add(obj);
             return obj;
         }
         else
@@ -47,9 +50,11 @@ public class ObjectPool : MonoBehaviour {
 
     public void PushObj(GameObject obj)
     {
-        CardDec.Add(obj);
-        obj.transform.parent = this.gameObject.transform;
+        EmptyDec.Add(obj);
+        obj.transform.SetParent(this.gameObject.transform);
         obj.transform.position = this.gameObject.transform.position;
+        CardDec.Remove(obj);
+        Debug.Log("push");
     }
 
 

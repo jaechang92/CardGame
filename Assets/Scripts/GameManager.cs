@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour {
 
 
     void Start () {
-        CardCreate("Player", 10);
+        //CardCreate("Player", 10);
 
     }
 	
@@ -45,34 +45,35 @@ public class GameManager : MonoBehaviour {
 
 
 
-    public void CardCreate(string master,int count)
+    public void CardCreate(string master)
     {
         if (master == "Player")
         {
+            int count = ObjectPool.instance.CardDec.Count;
             if (PlayerCardPool.Count < count)
             {
                 int num = count - PlayerCardPool.Count;
                 for (int i = 0; i < num; i++)
                 {
-                    
                     GameObject obj = Instantiate(nullPrefab, playerParentPool.transform);
                     PlayerCardPool.Add(obj);
                 }
             }
         }
 
-        if (master == "Enemy")
-        {
-            if (EnemyCardPool.Count < count)
-            {
-                int num = count - EnemyCardPool.Count;
-                for (int i = 0; i < num; i++)
-                {
-                    GameObject obj = Instantiate(nullPrefab, enemyParentPool.transform);
-                    EnemyCardPool.Add(obj);
-                }
-            }
-        }
+        //if (master == "Enemy")
+        //{
+            
+        //    if (EnemyCardPool.Count < count)
+        //    {
+        //        int num = count - EnemyCardPool.Count;
+        //        for (int i = 0; i < num; i++)
+        //        {
+        //            GameObject obj = Instantiate(nullPrefab, enemyParentPool.transform);
+        //            EnemyCardPool.Add(obj);
+        //        }
+        //    }
+        //}
 
 
 

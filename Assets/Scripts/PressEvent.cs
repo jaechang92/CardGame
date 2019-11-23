@@ -11,7 +11,7 @@ public class PressEvent : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler{
     public bool isPress = false;
     public GameObject mask;
     private CardState thisGameObject;
-    
+    private RectTransform tr;
     public void OnPointerDown(PointerEventData eventData)
     {
         currentTime = 0;
@@ -27,7 +27,8 @@ public class PressEvent : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler{
         // Use this for initialization
     void Start () {
         thisGameObject = this.gameObject.GetComponent<CardState>();
-        
+        tr = GetComponent<RectTransform>();
+
     }
 	
 	// Update is called once per frame
@@ -44,19 +45,14 @@ public class PressEvent : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler{
                 UIManager.instance.StartDragDec(thisGameObject.sprites[0], thisGameObject.sprites[2]);
                 ObjectPool.instance.PushObj(gameObject);
             }
-            
         }
 
         if (Input.GetMouseButtonUp(0) && currentTime > pressTime)
         {
             isPress = false;
+            UIManager.instance.dragging = false;
             mask.GetComponent<ScrollRect>().vertical = true;
-
-            if (Input.mousePosition.x < 255)
-            {
-                Debug.Log("덱에서 카드로");
-                ObjectPool.instance.PushObj(this.gameObject);
-            }
+            
         }
 
     }

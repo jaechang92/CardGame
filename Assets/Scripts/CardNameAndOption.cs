@@ -66,12 +66,12 @@ public class CardNameAndOption : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-        Debug.Log(tr.anchoredPosition.x);
+
         if (tr.anchoredPosition.x < 255)
         {
             OnDec = false;
             sprite.sprite = sprites[0];
-            Debug.Log("실행");
+            //Debug.Log("실행");
             tr.sizeDelta = sizeVertical;
             
         }
@@ -79,7 +79,7 @@ public class CardNameAndOption : MonoBehaviour {
         {
             OnDec = true;
             sprite.sprite = sprites[1];
-            Debug.Log("실행2");
+            //Debug.Log("실행2");
             tr.sizeDelta = sizeHorizontal;
         }
 
