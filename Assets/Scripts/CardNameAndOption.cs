@@ -16,6 +16,8 @@ public class CardNameAndOption : MonoBehaviour {
     public bool OnDec = false;
     public Sprite[] sprites;
     public Sprite nullsprite;
+    public Text text;
+    public string cardName;
     void init()
     {
         tr = GetComponent<RectTransform>();
@@ -71,6 +73,7 @@ public class CardNameAndOption : MonoBehaviour {
         {
             OnDec = false;
             sprite.sprite = sprites[0];
+            text.text = " ";
             //Debug.Log("실행");
             tr.sizeDelta = sizeVertical;
             
@@ -79,6 +82,7 @@ public class CardNameAndOption : MonoBehaviour {
         {
             OnDec = true;
             sprite.sprite = sprites[1];
+            text.text = cardName;
             //Debug.Log("실행2");
             tr.sizeDelta = sizeHorizontal;
         }

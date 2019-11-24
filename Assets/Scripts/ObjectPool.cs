@@ -32,7 +32,7 @@ public class ObjectPool : MonoBehaviour {
     }
 	
 
-    public GameObject PoolObj()
+    public GameObject PullObj()
     {
         if (EmptyDec.Count > 0)
         {

@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour{
     private int CardInDex;
     void Init()
     {
-        UI[1].SetActive(false);
+        //UI[1].SetActive(false);
         cardDrag.SetActive(false);
         _cardNameAndOption = cardDrag.GetComponent<CardNameAndOption>();
         CDM = GameManager.instance.managerPool[4].GetComponent<CardDecManager>();
@@ -58,10 +58,11 @@ public class UIManager : MonoBehaviour{
         {
             if (_cardNameAndOption.OnDec)
             {
-                GameObject obj = ObjectPool.instance.PoolObj();
+                GameObject obj = ObjectPool.instance.PullObj();
                 if (obj != null)
                 {
                     CDM.GetState(obj,_cardNameAndOption.sprite.sprite, CardInDex);
+                    obj.GetComponentInChildren<Text>().text = CardDatabase.instance.cardList[CardInDex].cardName.ToString();
                 }
                 else
                 {
@@ -120,6 +121,7 @@ public class UIManager : MonoBehaviour{
     {
         dragging = true;
         _cardNameAndOption.GetProperty(CardDatabase.instance.cardList[i].cardIcon, CardDatabase.instance.cardList[i].cardSlotIcon);
+        _cardNameAndOption.cardName = CardDatabase.instance.cardList[i].cardName.ToString();
         CardInDex = i;
     }
 
@@ -141,6 +143,17 @@ public class UIManager : MonoBehaviour{
     public void TestBtn()
     {
         Debug.Log("Click");
+    }
+
+
+    public void BackSpace()
+    {
+        EventSystem.current.currentSelectedGameObject.transform.parent.gameObject.SetActive(false);
+    }
+
+    public void GoToMenuBtn(GameObject obj)
+    {
+        obj.SetActive(true);
     }
 
 }
