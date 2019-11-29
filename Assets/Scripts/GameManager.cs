@@ -16,8 +16,8 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> EnemyCardPool;
 
 
-
-
+    public bool isRunning = false;
+    private int turnNumber = 0;
     void Awake()
     {
         if (instance != null)
@@ -75,6 +75,29 @@ public class GameManager : MonoBehaviour {
         //    }
         //}
 
+    }
+
+
+    public void GameLoop()
+    {
+
+        while (isRunning)
+        {
+            if (turnNumber == 0)
+            {
+                ///
+                /// 플레이어 카드 3장을 뽑는다.
+                ///
+
+                /// 
+                /// 적의 카드를 3장 뽑는다.
+                ///
+
+                turnNumber++;
+            }
+
+
+        }
 
 
     }
