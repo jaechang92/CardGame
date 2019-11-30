@@ -16,6 +16,10 @@ public class UIManager : MonoBehaviour{
     public bool dragging = false;
     public ScrollRect scrollRect;
 
+    public GameObject OnceInBattle;
+
+    public Text playerHpText;
+    public Text enemyHpText;
     private int temp = 0;
     private CardNameAndOption _cardNameAndOption;
     private CardDecManager CDM;
@@ -26,6 +30,8 @@ public class UIManager : MonoBehaviour{
         cardDrag.SetActive(false);
         _cardNameAndOption = cardDrag.GetComponent<CardNameAndOption>();
         CDM = GameManager.instance.managerPool[4].GetComponent<CardDecManager>();
+        playerHpText.text = GameManager.instance.playerHP.ToString();
+        enemyHpText.text = GameManager.instance.enemyHp.ToString();
     }
 
     void Awake()
@@ -75,10 +81,13 @@ public class UIManager : MonoBehaviour{
             cardDrag.SetActive(false);
         }
 
+        playerHpText.text = GameManager.instance.playerHP.ToString();
+        enemyHpText.text = GameManager.instance.enemyHp.ToString();
 
 
 
-	}
+
+    }
 
 
     public void SelectBtn()
@@ -115,6 +124,12 @@ public class UIManager : MonoBehaviour{
         }
     }
     
+    public void StartBattleBtn(GameObject obj)
+    {
+        obj.SetActive(true);
+        OnceInBattle.SetActive(true);
+        GameManager.instance.isRunning = true;
+    }
 
 
     public void StartDrag(int i)
@@ -154,6 +169,17 @@ public class UIManager : MonoBehaviour{
     public void GoToMenuBtn(GameObject obj)
     {
         obj.SetActive(true);
+    }
+
+    public void OkBtnInBattleSceneForOnce()
+    {
+        foreach (GameObject item in GameManager.instance.PlayerGetCardPool)
+        {
+            item.transform.SetParent(GameManager.instance.decOfHand.transform);
+        }
+        GameManager.instance.decOfHand.GetComponent<CardDecGrid>().SortObj();
+
+        OnceInBattle.SetActive(false);
     }
 
 }

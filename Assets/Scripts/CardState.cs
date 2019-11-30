@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardState : MonoBehaviour {
+public class CardState : MonoBehaviour
+{
 
+    public int ID;
     public List<Sprite> sprites;
 
     public float ratio;
@@ -17,18 +19,20 @@ public class CardState : MonoBehaviour {
     private RectTransform tr;
     void Awake()
     {
-        
+
     }
 
-    void Start () {
+    void Start()
+    {
         ratio = 134.0f / 200.0f;
 
         tr = GetComponent<RectTransform>();
         image = GetComponent<Image>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (this.gameObject.tag == "Card")
         {
@@ -55,12 +59,24 @@ public class CardState : MonoBehaviour {
 
     public void CardSetup(int CardID)
     {
+        ID = CardID;
         mana = CardDatabase.instance.cardList[CardID].mana;
         damage = CardDatabase.instance.cardList[CardID].damage;
         hp = CardDatabase.instance.cardList[CardID].hp;
-        sprites[0] =(CardDatabase.instance.cardList[CardID].cardIcon);
+        sprites[0] = (CardDatabase.instance.cardList[CardID].cardIcon);
         sprites[1] = (CardDatabase.instance.backIcon);
         sprites[2] = (CardDatabase.instance.cardList[CardID].cardSlotIcon);
 
+    }
+
+    public void CardSetup(CardState CardObject)
+    {
+        ID = CardObject.ID;
+        mana = CardObject.mana;
+        damage = CardObject.damage;
+        hp = CardObject.hp;
+        sprites[0] = (CardObject.sprites[0]);
+        sprites[1] = (CardObject.sprites[1]);
+        sprites[2] = (CardObject.sprites[2]);
     }
 }
