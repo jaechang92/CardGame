@@ -52,7 +52,6 @@ public class PressEvent : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler{
             isPress = false;
             UIManager.instance.dragging = false;
             mask.GetComponent<ScrollRect>().vertical = true;
-            
         }
 
     }

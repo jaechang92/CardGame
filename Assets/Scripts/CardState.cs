@@ -33,18 +33,18 @@ public class CardState : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //Debug.Log((-180 <= tr.eulerAngles.y && tr.eulerAngles.y <= -90));
+        Debug.Log(tr.eulerAngles.y);
         if (this.gameObject.tag == "Card")
         {
             tr.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tr.sizeDelta.x / ratio);
-            if (tr.eulerAngles.y > 90 && tr.eulerAngles.y <= 180)
+            // 90 <= X <= 180 && -180 <= X <= -90 까진 뒷면 나머지는 앞면
+            if (tr.eulerAngles.y >= 90 && tr.eulerAngles.y <= 270)
             {
-
                 image.sprite = sprites[1];
             }
             else
             {
-
                 image.sprite = sprites[0];
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 
 public class UIManager : MonoBehaviour{
@@ -14,6 +15,7 @@ public class UIManager : MonoBehaviour{
 
     public GameObject cardDrag;
     public bool dragging = false;
+    public bool draggingInGame = false;
     public ScrollRect scrollRect;
 
     public GameObject OnceInBattle;
@@ -80,6 +82,9 @@ public class UIManager : MonoBehaviour{
             }
             cardDrag.SetActive(false);
         }
+
+
+        
 
         playerHpText.text = GameManager.instance.playerHP.ToString();
         enemyHpText.text = GameManager.instance.enemyHp.ToString();
@@ -154,7 +159,7 @@ public class UIManager : MonoBehaviour{
         Debug.Log("StartDragDec");
         
     }
-
+    
     public void TestBtn()
     {
         Debug.Log("Click");
@@ -177,7 +182,7 @@ public class UIManager : MonoBehaviour{
         {
             item.transform.SetParent(GameManager.instance.decOfHand.transform);
         }
-        GameManager.instance.decOfHand.GetComponent<CardDecGrid>().SortObj();
+        GameManager.instance.CardDecGrid.SortObj();
 
         OnceInBattle.SetActive(false);
     }

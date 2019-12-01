@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviour {
     private int turnNumber = 0;
     private int cardIndex = 0;
     public bool playerTurn = true;
+    public bool drawOnOff = false;
+    private GameObject nullGameObject;
+    public CardDecGrid CardDecGrid;
     void Awake()
     {
         if (instance != null)
@@ -46,7 +49,7 @@ public class GameManager : MonoBehaviour {
 
     void Start () {
         //CardCreate("Player", 10);
-
+        CardDecGrid = decOfHand.GetComponent<CardDecGrid>();
     }
 	
 	// Update is called once per frame
@@ -101,7 +104,7 @@ public class GameManager : MonoBehaviour {
         {
             /// 덱 초기화
             CardCreate("Player");
-            
+
             ///
             /// 플레이어 카드 3장을 뽑는다.
             ///
@@ -113,29 +116,38 @@ public class GameManager : MonoBehaviour {
 
             for (int i = 0; i < 3; i++)
             {
-                PlayerGetCardPool.Add(DrawCard(PlayerCardPool));
+                DrawCard(PlayerCardPool);
                 PlayerGetCardPool[i].transform.SetParent(startThreeCardGrid.transform);
                 //EnemyGetCardPool.Add(DrawCard(EnemyCardPool));
             }
             turnNumber++;
         }
-
-        //플레이어 턴일때와 아닐때
-        if (playerTurn && turnNumber > 0)
+        else
         {
+            //플레이어 턴일때와 아닐때
+            if (playerTurn)
+            {
+                if (drawOnOff)
+                {
+                    DrawCard(PlayerCardPool);
+                    CardDecGrid.SortObj();
+                    drawOnOff = false;
+
+                }
+                
+            }
+            else if (!playerTurn)
+            {
+
+            }
+
+
+            if (playerHP <= 0 || enemyHp <= 0)
+            {
+                GameEnd();
+            }
 
         }
-        else if(!playerTurn && turnNumber > 0)
-        {
-
-        }
-
-
-        if (playerHP <=0 || enemyHp <=0)
-        {
-            GameEnd();
-        }
-        
 
     }
 
@@ -148,20 +160,36 @@ public class GameManager : MonoBehaviour {
     }
 
 
-    private GameObject DrawCard(List<GameObject> _CardPoolName)
+    private void DrawCard(List<GameObject> _CardPoolName)
     {
-        cardIndex = Random.Range(0, _CardPoolName.Count - 1);
-        GameObject dCard = _CardPoolName[cardIndex];
-        _CardPoolName.Remove(dCard);
-        return dCard;
+        if (PlayerCardPool.Count >= 1)
+        {
+            cardIndex = Random.Range(0, _CardPoolName.Count - 1);
+            GameObject dCard = _CardPoolName[cardIndex];
+            _CardPoolName.Remove(dCard);
+            PlayerGetCardPool.Add(dCard);
+            dCard.transform.SetParent(decOfHand.transform);
+        }
+        else
+        {
+            Debug.Log("더이상 뽑을 덱이 없습니다.");
+        }
+
     }
 
     public void TestDraw()
     {
-        cardIndex = Random.Range(0, PlayerCardPool.Count - 1);
-        GameObject dCard = PlayerCardPool[cardIndex];
-        PlayerCardPool.Remove(dCard);
-        PlayerGetCardPool.Add(dCard);
+        if (PlayerCardPool.Count >= 1)
+        {
+            cardIndex = Random.Range(0, PlayerCardPool.Count - 1);
+            GameObject dCard = PlayerCardPool[cardIndex];
+            PlayerCardPool.Remove(dCard);
+            PlayerGetCardPool.Add(dCard);
+        }
+        else
+        {
+            Debug.Log("더이상 뽑을 덱이 없습니다.");
+        }
     }
 
 }
