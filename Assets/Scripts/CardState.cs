@@ -34,8 +34,8 @@ public class CardState : MonoBehaviour
     void Update()
     {
         //Debug.Log((-180 <= tr.eulerAngles.y && tr.eulerAngles.y <= -90));
-        Debug.Log(tr.eulerAngles.y);
-        if (this.gameObject.tag == "Card")
+        
+        if (this.gameObject.tag == "Card" || this.gameObject.tag == "FieldCard")
         {
             tr.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tr.sizeDelta.x / ratio);
             // 90 <= X <= 180 && -180 <= X <= -90 까진 뒷면 나머지는 앞면

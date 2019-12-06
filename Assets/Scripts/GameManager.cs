@@ -20,6 +20,10 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> PlayerGetCardPool;   // 손에 들고있는 카드덱
     public List<GameObject> EnemyGetCardPool;    // 손에 들고있는 카드덱
 
+    public GameObject [] FieldParent = new GameObject[2];
+    public List<GameObject> PlayerField;         // 필드에 있는 카드덱
+    public List<GameObject> EnemyField;          // 필드에 있는 카드덱
+
 
     public int playerHP = 30, enemyHp = 30;
 
@@ -32,6 +36,8 @@ public class GameManager : MonoBehaviour {
     public bool drawOnOff = false;
     private GameObject nullGameObject;
     public CardDecGrid CardDecGrid;
+    public CardDecGrid FieldDecGrid;
+    public CardDecGrid EnemyDecGrid;
     void Awake()
     {
         if (instance != null)
@@ -50,6 +56,8 @@ public class GameManager : MonoBehaviour {
     void Start () {
         //CardCreate("Player", 10);
         CardDecGrid = decOfHand.GetComponent<CardDecGrid>();
+        FieldDecGrid = FieldParent[0].GetComponent<CardDecGrid>();
+        EnemyDecGrid = FieldParent[1].GetComponent<CardDecGrid>();
     }
 	
 	// Update is called once per frame
@@ -168,6 +176,7 @@ public class GameManager : MonoBehaviour {
             GameObject dCard = _CardPoolName[cardIndex];
             _CardPoolName.Remove(dCard);
             PlayerGetCardPool.Add(dCard);
+            CardDecGrid.ObjectToSort.Add(dCard);
             dCard.transform.SetParent(decOfHand.transform);
         }
         else

@@ -11,13 +11,11 @@ public class CardDecGrid : MonoBehaviour {
     private void Start()
     {
         waitTime = new WaitForSeconds(0.2f);
-        ObjectToSort = GameManager.instance.PlayerGetCardPool;
 
         //StartCoroutine(SortObj());
     }
 
     void Update () {
-        
 
     }
 
@@ -27,14 +25,29 @@ public class CardDecGrid : MonoBehaviour {
         
         Debug.Log("실행1");
 
-        count = ObjectToSort.Count;
+        count = GameManager.instance.PlayerGetCardPool.Count;
         int a = count / 2;
         for (int i = 0; i < count; i++)
         {
-            Debug.Log("실행2");
+
             ObjectToSort[i].transform.SetPositionAndRotation(this.gameObject.transform.position - Vector3.right*100*(i-a), Quaternion.Euler(0, 0, (i - a) * 5));
             //ObjectToSort[i].transform.Rotate(0, 0, (i - a) * 2);
             //ObjectToSort[i].transform.eulerAngles.Set(0, 0, (i-a) * 2);
         }
     }
+
+
+    public void FieldSort()
+    {
+        count = GameManager.instance.PlayerField.Count;
+        int a = count / 2;
+        for (int i = 0; i < count; i++)
+        {
+            Debug.Log("실행2");
+            ObjectToSort[i].transform.SetPositionAndRotation(this.gameObject.transform.position - Vector3.right * 100 * (i - a), Quaternion.Euler(0, 0, 0));
+            //ObjectToSort[i].transform.Rotate(0, 0, (i - a) * 2);
+            //ObjectToSort[i].transform.eulerAngles.Set(0, 0, (i-a) * 2);
+        }
+    }
+
 }
