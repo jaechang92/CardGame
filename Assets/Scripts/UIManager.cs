@@ -134,6 +134,11 @@ public class UIManager : MonoBehaviour{
         obj.SetActive(true);
         OnceInBattle.SetActive(true);
         GameManager.instance.isRunning = true;
+        ///작업중
+        foreach (var item in UI)
+        {
+            item.SetActive(false);
+        }
     }
 
 

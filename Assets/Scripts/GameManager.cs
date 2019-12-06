@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour {
     public CardDecGrid CardDecGrid;
     public CardDecGrid FieldDecGrid;
     public CardDecGrid EnemyDecGrid;
+
+
+    public List<GameObject> AttackList;
+
     void Awake()
     {
         if (instance != null)
@@ -200,5 +204,11 @@ public class GameManager : MonoBehaviour {
             Debug.Log("더이상 뽑을 덱이 없습니다.");
         }
     }
+
+
+    //IEnumerator AttackPool()
+    //{
+    //    //yield return new wait
+    //}
 
 }
