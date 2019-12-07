@@ -130,8 +130,10 @@ public class GameManager : MonoBehaviour {
             {
                 DrawCard(PlayerCardPool);
                 PlayerGetCardPool[i].transform.SetParent(startThreeCardGrid.transform);
+                startThreeCardGrid.GetComponent<CardDecGrid>().ObjectToSort.Add(PlayerGetCardPool[i]);
                 //EnemyGetCardPool.Add(DrawCard(EnemyCardPool));
             }
+            startThreeCardGrid.GetComponent<CardDecGrid>().OneSort();
             turnNumber++;
         }
         else

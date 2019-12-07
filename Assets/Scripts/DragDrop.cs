@@ -47,6 +47,7 @@ public class DragDrop : MonoBehaviour , IPointerDownHandler, IPointerUpHandler {
 
         if (isDragging && OnOff)
         {
+            //Debug.Log("Drop");
             this.gameObject.transform.position = Input.mousePosition;
             this.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
         }

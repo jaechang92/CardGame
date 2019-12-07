@@ -15,8 +15,9 @@ public class CardState : MonoBehaviour
     public int damage;
     public int hp;
 
-    public Image image;
-    private RectTransform tr;
+    public SpriteRenderer image;
+    public Image image2;
+    private Transform tr;
     void Awake()
     {
 
@@ -26,8 +27,16 @@ public class CardState : MonoBehaviour
     {
         ratio = 134.0f / 200.0f;
 
-        tr = GetComponent<RectTransform>();
-        image = GetComponent<Image>();
+        tr = GetComponent<Transform>();
+        if (this.gameObject.GetComponent<SpriteRenderer>() != null)
+        {
+            image = GetComponent<SpriteRenderer>();
+        }
+        else
+        {
+            image2 = GetComponent<Image>();
+        }
+        
     }
 
     // Update is called once per frame
@@ -37,7 +46,9 @@ public class CardState : MonoBehaviour
         
         if (this.gameObject.tag == "Card" || this.gameObject.tag == "FieldCard")
         {
-            tr.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tr.sizeDelta.x / ratio);
+            tr.localScale = Vector3.right * tr.localScale.x + Vector3.up * tr.localScale.x  + Vector3.forward * tr.localScale.z;
+            //tr.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, tr.sizeDelta.x / ratio);
+
             // 90 <= X <= 180 && -180 <= X <= -90 까진 뒷면 나머지는 앞면
             if (tr.eulerAngles.y >= 90 && tr.eulerAngles.y <= 270)
             {
@@ -52,9 +63,10 @@ public class CardState : MonoBehaviour
         {
             if (sprites[2] != null)
             {
-                image.sprite = sprites[2];
+                image2.sprite = sprites[2];
             }
         }
+        
     }
 
     public void CardSetup(int CardID)
